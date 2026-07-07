@@ -37,6 +37,12 @@
   - 无向图按字典序排序，A-B 和 B-A 合并
   - 统计每种 TYPE 配对的边数量和占比
 
+### 6. 全局统计 — 按 TYPE 的 configs 配置分布
+- [x] `src/global_statistics/type_configs_stats.py`
+  - 将 nodes 按 device.TYPE 分组
+  - 统计每种 TYPE 下 configs[] 中各配置 key 的出现次数和占比
+  - 按 split 汇总，按配置总数降序排列
+
 ## 待完成
 
 ### 7. 阶段一：单图拓扑可视化

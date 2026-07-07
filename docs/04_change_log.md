@@ -43,3 +43,9 @@
   - 统计每种 TYPE 配对的边数量和占比
   - 输出 JSON 结果 + 终端分布图
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/type_configs_stats.py`
+  - 按 device.TYPE 分组统计 configs 配置类型分布
+  - 每种 TYPE 下列出各配置 key 的出现次数和占比
+  - 全局汇总按配置总数降序排列
+  - 输出 JSON 结果 + 终端分组柱状图
+  - 支持 `--split` 参数
