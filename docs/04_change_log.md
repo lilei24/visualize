@@ -25,3 +25,9 @@
   - 按 split 汇总全局覆盖率
   - 输出 JSON 结果 + 终端可视化摘要
   - 新增 `--split` 参数：train（仅训练集）、val（仅验证集）、all（全部，默认）
+- 新建 `src/global_statistics/node_subkey_stats.py`
+  - 统计 device 内各顶层 key 的出现次数和覆盖率
+  - 统计 topologyNode 内各顶层 key 的出现次数和覆盖率
+  - 统计 configs[] 内各配置类型 key 的出现次数和覆盖率
+  - 输出 JSON 结果 + 终端分类柱状图
+  - 支持 `--split` 参数

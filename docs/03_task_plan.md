@@ -11,9 +11,16 @@
 ### 2. 全局统计 — node 字段统计
 - [x] `src/global_statistics/node_field_stats.py`
   - 统计每张图的 nodes 数量
-  - 统计每个 node 的 id / devices / topologyNode / configs 字段存在性
+  - 统计每个 node 的 id / device / topologyNode / configs 字段存在性
   - 按 split 汇总覆盖率
   - 输出 JSON 结果和终端摘要
+
+### 3. 全局统计 — node 子 key 统计
+- [x] `src/global_statistics/node_subkey_stats.py`
+  - 统计 device 内各顶层 key 的分布和覆盖率
+  - 统计 topologyNode 内各顶层 key 的分布和覆盖率
+  - 统计 configs[] 内各配置类型 key 的分布和覆盖率
+  - 按 split 汇总，按频次降序排列
 
 ## 待完成
 
