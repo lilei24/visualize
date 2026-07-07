@@ -22,17 +22,25 @@
   - 统计 configs[] 内各配置类型 key 的分布和覆盖率
   - 按 split 汇总，按频次降序排列
 
+### 4. 全局统计 — node 值分布统计
+- [x] `src/global_statistics/node_value_distribution.py`
+  - 统计 device.TYPE 的类别及占比
+  - 统计 device.NET_ENVIRONMENT 的类别及占比
+  - 统计 topologyNode.NODECLASS 的类别及占比
+  - 统计 topologyNode.DEVICEROLE 的类别及占比
+  - 统计 topologyNode.CLASSNAME 的类别及占比
+
 ## 待完成
 
-### 3. 阶段一：单图拓扑可视化
+### 5. 阶段一：单图拓扑可视化
 - [ ] 拓扑视图渲染（力导向图）
 - [ ] 节点详情面板（devices + topologyNode + configs）
 - [ ] configs 可折叠树形展示
 - [ ] deviceGroups 展示
 - [ ] 图切换器
 
-### 4. 阶段二：跨图统计分析
+### 6. 阶段二：跨图统计分析
 - [ ] 待细化
 
-### 5. 阶段三：预测任务挖掘
+### 7. 阶段三：预测任务挖掘
 - [ ] 待细化

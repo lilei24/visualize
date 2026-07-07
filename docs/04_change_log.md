@@ -31,3 +31,9 @@
   - 统计 configs[] 内各配置类型 key 的出现次数和覆盖率
   - 输出 JSON 结果 + 终端分类柱状图
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/node_value_distribution.py`
+  - 统计 device.TYPE 的类别及占比
+  - 统计 device.NET_ENVIRONMENT 的类别及占比
+  - 统计 topologyNode.NODECLASS/DEVICEROLE/CLASSNAME 的类别及占比
+  - 输出 JSON 结果 + 终端分类柱状图
+  - 支持 `--split` 参数
