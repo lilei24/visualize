@@ -29,7 +29,7 @@
 | 字段           | 类型          | 说明                                     |
 | ------------ | ----------- | -------------------------------------- |
 | id           | string      | 节点唯一标识，被 links 的 source/target 引用      |
-| devices      | dict        | 设备物理属性（NAME/MANUFACTURER/MODEL/TYPE 等） |
+| device       | dict        | 设备物理属性（NAME/MANUFACTURER/MODEL/TYPE 等） |
 | topologyNode | dict        | 拓扑角色（NODECLASS/DEVICEROLE/CLASSNAME）   |
 | configs      | list\[dict] | **核心**：节点级配置列表                         |
 
@@ -109,7 +109,7 @@
     "nodes": [
         {
             "id": "",
-            "devices": {
+            "device": {
                 "NAME": "",
                 "MANUFACTURER": "",
                 "MODEL": "",

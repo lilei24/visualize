@@ -3,7 +3,7 @@
 
 统计维度：
 - 每张图的 nodes 总数
-- 每个 node 的 id / devices / topologyNode / configs 字段是否存在
+- 每个 node 的 id / device / topologyNode / configs 字段是否存在
 - 按 split 汇总整体覆盖率和缺失情况。
 """
 
@@ -23,7 +23,7 @@ DEFAULT_OUTPUT_DIR = Path("statistics")
 DEFAULT_PROGRESS_INTERVAL = 50
 
 # 待检查字段列表
-NODE_FIELDS = ["id", "devices", "topologyNode", "configs"]
+NODE_FIELDS = ["id", "device", "topologyNode", "configs"]
 
 
 @dataclass
@@ -31,7 +31,7 @@ class NodeFieldPresence:
     """单个 node 内各字段是否存在。"""
 
     has_id: bool = False
-    has_devices: bool = False
+    has_device: bool = False
     has_topologyNode: bool = False
     has_configs: bool = False
 
@@ -39,7 +39,7 @@ class NodeFieldPresence:
     def from_node(cls, node: Dict[str, Any]) -> "NodeFieldPresence":
         return cls(
             has_id="id" in node,
-            has_devices="devices" in node,
+            has_device="device" in node,
             has_topologyNode="topologyNode" in node,
             has_configs="configs" in node,
         )
@@ -48,8 +48,8 @@ class NodeFieldPresence:
         missing = []
         if not self.has_id:
             missing.append("id")
-        if not self.has_devices:
-            missing.append("devices")
+        if not self.has_device:
+            missing.append("device")
         if not self.has_topologyNode:
             missing.append("topologyNode")
         if not self.has_configs:
@@ -71,8 +71,8 @@ class FileStats:
         return self.field_counts.get("id", 0)
 
     @property
-    def devices_present(self) -> int:
-        return self.field_counts.get("devices", 0)
+    def device_present(self) -> int:
+        return self.field_counts.get("device", 0)
 
     @property
     def topologyNode_present(self) -> int:
@@ -186,13 +186,13 @@ def build_statistics(
                 "node_count": file_stats.node_count,
                 "field_present": {
                     "id": file_stats.id_present,
-                    "devices": file_stats.devices_present,
+                    "device": file_stats.device_present,
                     "topologyNode": file_stats.topologyNode_present,
                     "configs": file_stats.configs_present,
                 },
                 "field_missing": {
                     "id": file_stats.node_count - file_stats.id_present,
-                    "devices": file_stats.node_count - file_stats.devices_present,
+                    "device": file_stats.node_count - file_stats.device_present,
                     "topologyNode": file_stats.node_count - file_stats.topologyNode_present,
                     "configs": file_stats.node_count - file_stats.configs_present,
                 },
@@ -220,7 +220,7 @@ def build_statistics(
         "total_nodes": total_nodes,
         "global_field_present": {
             "id": global_field_counts["id"],
-            "devices": global_field_counts["devices"],
+            "device": global_field_counts["device"],
             "topologyNode": global_field_counts["topologyNode"],
             "configs": global_field_counts["configs"],
         },

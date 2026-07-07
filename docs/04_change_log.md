@@ -21,7 +21,7 @@
 ### 全局统计模块
 - 新建 `src/global_statistics/node_field_stats.py`
   - 统计每张图的 nodes 数量
-  - 统计每个 node 的 id/devices/topologyNode/configs 字段存在性
+  - 统计每个 node 的 id/device/topologyNode/configs 字段存在性
   - 按 split 汇总全局覆盖率
   - 输出 JSON 结果 + 终端可视化摘要
   - 新增 `--split` 参数：train（仅训练集）、val（仅验证集）、all（全部，默认）
