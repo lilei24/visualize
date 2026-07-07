@@ -30,17 +30,24 @@
   - 统计 topologyNode.DEVICEROLE 的类别及占比
   - 统计 topologyNode.CLASSNAME 的类别及占比
 
+### 5. 全局统计 — 边 TYPE 配对统计
+- [x] `src/global_statistics/edge_type_pair_stats.py`
+  - 通过 links 提取每条边的 source/target 节点
+  - 按 (node1.device.TYPE, node2.device.TYPE) 配对统计边数量
+  - 无向图按字典序排序，A-B 和 B-A 合并
+  - 统计每种 TYPE 配对的边数量和占比
+
 ## 待完成
 
-### 5. 阶段一：单图拓扑可视化
+### 7. 阶段一：单图拓扑可视化
 - [ ] 拓扑视图渲染（力导向图）
 - [ ] 节点详情面板（devices + topologyNode + configs）
 - [ ] configs 可折叠树形展示
 - [ ] deviceGroups 展示
 - [ ] 图切换器
 
-### 6. 阶段二：跨图统计分析
+### 8. 阶段二：跨图统计分析
 - [ ] 待细化
 
-### 7. 阶段三：预测任务挖掘
+### 9. 阶段三：预测任务挖掘
 - [ ] 待细化

@@ -37,3 +37,9 @@
   - 统计 topologyNode.NODECLASS/DEVICEROLE/CLASSNAME 的类别及占比
   - 输出 JSON 结果 + 终端分类柱状图
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/edge_type_pair_stats.py`
+  - 通过 links 统计边两端的 device.TYPE 配对
+  - 无向图按字典序合并 A-B 和 B-A
+  - 统计每种 TYPE 配对的边数量和占比
+  - 输出 JSON 结果 + 终端分布图
+  - 支持 `--split` 参数
