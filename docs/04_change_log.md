@@ -10,13 +10,15 @@
 
 ### 文档
 - `docs/00_project_brief.md` — 项目说明
-- `docs/01_requirements.md` — 需求文档（三阶段目标）
-- `docs/02_architecture.md` — 架构设计（待填充）
+- `docs/00_project_brief.md` — 项目说明（含目录结构总览）
+- `docs/01_requirements.md` — 需求文档（三阶段目标 + 全局统计摘要）
+- `docs/02_architecture.md` — 架构设计（统计层 + 可视化层规划）
 - `docs/03_task_plan.md` — 任务拆解
 - `docs/04_change_log.md` — 变更记录
 - `docs/05_data_format.md` — 数据格式说明（基于参考代码推断）
 - `docs/06_api_usage.md` — 外部 API 调用方式（基于 classify_inference_errors_vllm.py）
 - `docs/decisions/ADR-0001-tech-stack.md` — 技术栈选择（待填充）
+- `CLAUDE.md` — 更新目录结构
 
 ### 全局统计模块
 - 新建 `src/global_statistics/node_field_stats.py`

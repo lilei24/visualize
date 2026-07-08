@@ -70,14 +70,26 @@
 
 ---
 
+## 阶段一前置：全局统计（已完成）
+
+在进入可视化之前，已完成一批全局统计脚本，建立对数据的初步认识：
+
+| 脚本 | 统计维度 |
+|------|----------|
+| `node_field_stats.py` | 每图 nodes 数量、id/device/topologyNode/configs 字段覆盖率 |
+| `node_subkey_stats.py` | device/topologyNode/configs 内部顶层 key 的分布和覆盖率 |
+| `node_value_distribution.py` | TYPE/NET_ENVIRONMENT/NODECLASS/DEVICEROLE/CLASSNAME 的值分布 |
+| `edge_type_pair_stats.py` | links 中边两端节点的 TYPE 配对统计 |
+| `type_configs_stats.py` | 按 device.TYPE 分组统计 configs 配置类型分布 |
+
 ## 阶段二需求（规划中）：跨图统计分析
 
-（待阶段一完成后细化）
+（待阶段一完成后，基于可视化发现的问题细化）
 
-- 配置类型（config key）跨图分布统计
 - 每节点平均配置数、配置长度分布
 - 拓扑角色与配置类型的关联分析
-- 设备类型/厂商与配置的关联分析
+- 跨图对比：train/val 分布一致性
+- deviceGroup 配置的覆盖范围分析
 
 ---
 
