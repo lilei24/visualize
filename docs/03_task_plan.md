@@ -57,17 +57,23 @@
   - 同时按 SUBTYPE 汇总各 TYPE 分布
   - 支持 `--split` 参数
 
+### 9. 全局统计 — link 字段统计
+- [x] `src/global_statistics/link_field_stats.py`
+  - 统计 links[].link 内 LEFTPORT/RIGHTPORT/CLASSNAME 的覆盖率
+  - 统计各字段的值类别分布
+  - 支持 `--split` 参数
+
 ## 待完成
 
-### 9. 阶段一：单图拓扑可视化
+### 10. 阶段一：单图拓扑可视化
 - [ ] 拓扑视图渲染（力导向图）
 - [ ] 节点详情面板（devices + topologyNode + configs）
 - [ ] configs 可折叠树形展示
 - [ ] deviceGroups 展示
 - [ ] 图切换器
 
-### 10. 阶段二：跨图统计分析
+### 11. 阶段二：跨图统计分析
 - [ ] 待细化
 
-### 10. 阶段三：预测任务挖掘
+### 12. 阶段三：预测任务挖掘
 - [ ] 待细化

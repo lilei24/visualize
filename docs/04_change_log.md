@@ -63,3 +63,9 @@
   - 同时按 SUBTYPE 汇总各 TYPE 占比
   - 输出 JSON 结果 + 终端交叉表
   - 支持 `--split` 参数
+  - SUBTYPE 缺失时标记为 `<无>`，值为空时标记为 `(空)`
+- 新建 `src/global_statistics/link_field_stats.py`
+  - 统计 links[].link 内 LEFTPORT/RIGHTPORT/CLASSNAME 的覆盖率
+  - 统计各字段的值类别分布
+  - 输出 JSON 结果 + 终端覆盖率柱状图 + 值分布
+  - 支持 `--split` 参数
