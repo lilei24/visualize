@@ -50,16 +50,23 @@
   - 同时按 DEVICEROLE 汇总各 TYPE 分布
   - 支持 `--split` 参数
 
+### 8. 全局统计 — TYPE × SUBTYPE 联合分布
+- [x] `src/global_statistics/type_subtype_joint_stats.py`
+  - 统计 (device.TYPE, device.SUBTYPE) 组合的节点数
+  - 按 TYPE 行 × SUBTYPE 列展示交叉分布
+  - 同时按 SUBTYPE 汇总各 TYPE 分布
+  - 支持 `--split` 参数
+
 ## 待完成
 
-### 8. 阶段一：单图拓扑可视化
+### 9. 阶段一：单图拓扑可视化
 - [ ] 拓扑视图渲染（力导向图）
 - [ ] 节点详情面板（devices + topologyNode + configs）
 - [ ] configs 可折叠树形展示
 - [ ] deviceGroups 展示
 - [ ] 图切换器
 
-### 9. 阶段二：跨图统计分析
+### 10. 阶段二：跨图统计分析
 - [ ] 待细化
 
 ### 10. 阶段三：预测任务挖掘

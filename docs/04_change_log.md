@@ -57,3 +57,9 @@
   - 同时按 DEVICEROLE 汇总各 TYPE 占比
   - 输出 JSON 结果 + 终端交叉表
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/type_subtype_joint_stats.py`
+  - 统计 device.TYPE × device.SUBTYPE 联合分布
+  - 按 TYPE 行 × SUBTYPE 列展示交叉分布
+  - 同时按 SUBTYPE 汇总各 TYPE 占比
+  - 输出 JSON 结果 + 终端交叉表
+  - 支持 `--split` 参数
