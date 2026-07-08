@@ -3,6 +3,7 @@
 
 统计维度：
 - 每个 node 的 (device.TYPE, device.SUBTYPE) 组合的出现次数
+- SUBTYPE 不存在时标记为 "<无>"，值为空字符串时标记为 "(空)"
 - 按 TYPE 行、SUBTYPE 列展示交叉表
 - 按 split 汇总
 """
@@ -50,12 +51,19 @@ def load_graph(path: Path) -> Tuple[Dict[str, Any] | None, str]:
 
 
 def extract_joint_values(node: Dict[str, Any]) -> Tuple[str, str] | None:
-    """从 node 中提取 (device.TYPE, device.SUBTYPE) 组合。"""
+    """从 node 中提取 (device.TYPE, device.SUBTYPE) 组合。
+
+    TYPE 几乎 100% 存在；SUBTYPE 不一定有，缺失时标记为 "<无>"。
+    """
     device = node.get("device")
     if not isinstance(device, dict):
         return None
     device_type = str(device.get("TYPE", ""))
-    device_subtype = str(device.get("SUBTYPE", ""))
+    # 区分 key 不存在 vs 值为空字符串
+    if "SUBTYPE" in device:
+        device_subtype = str(device["SUBTYPE"]) if device["SUBTYPE"] != "" else "(空)"
+    else:
+        device_subtype = "<无>"
     return (device_type, device_subtype)
 
 
