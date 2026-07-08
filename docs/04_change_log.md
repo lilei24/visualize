@@ -69,3 +69,9 @@
   - 统计各字段的值类别分布
   - 输出 JSON 结果 + 终端覆盖率柱状图 + 值分布
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/dg_type_overlap_stats.py`
+  - 统计 deviceGroups.DEVICEGROUPTYPES 与 nodes.device.TYPE 的重叠关系
+  - DEVICEGROUPTYPES 逗号分隔值自动拆分（"FW,LSW" → {"FW", "LSW"}）
+  - 标注双方共有、仅 DG 有、仅 node 有的值
+  - 输出 JSON 结果 + 终端对照表
+  - 支持 `--split` 参数

@@ -63,17 +63,24 @@
   - 统计各字段的值类别分布
   - 支持 `--split` 参数
 
+### 10. 全局统计 — DEVICEGROUPTYPES vs node TYPE 重叠分析
+- [x] `src/global_statistics/dg_type_overlap_stats.py`
+  - 提取 deviceGroups 的 DEVICEGROUPTYPES 值（逗号分隔拆分）
+  - 与 nodes 的 device.TYPE 做重叠分析
+  - 标注双方共有、DG 独有、node 独有的值
+  - 支持 `--split` 参数
+
 ## 待完成
 
-### 10. 阶段一：单图拓扑可视化
+### 11. 阶段一：单图拓扑可视化
 - [ ] 拓扑视图渲染（力导向图）
 - [ ] 节点详情面板（devices + topologyNode + configs）
 - [ ] configs 可折叠树形展示
 - [ ] deviceGroups 展示
 - [ ] 图切换器
 
-### 11. 阶段二：跨图统计分析
+### 12. 阶段二：跨图统计分析
 - [ ] 待细化
 
-### 12. 阶段三：预测任务挖掘
+### 13. 阶段三：预测任务挖掘
 - [ ] 待细化
