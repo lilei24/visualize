@@ -3,7 +3,8 @@
 
 统计维度：
 - LEFTPORT / RIGHTPORT / CLASSNAME 字段覆盖率
-- LEFTPORT / RIGHTPORT / CLASSNAME 的值类别分布
+- LEFTPORT / RIGHTPORT 值分布：去除数字后缀聚合（GigabitEthernet0/0/0 → GigabitEthernet）
+- CLASSNAME 的值类别分布
 - 按 split 汇总
 """
 
@@ -11,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import time
 from collections import Counter
 from pathlib import Path
@@ -24,11 +26,24 @@ DEFAULT_PROGRESS_INTERVAL = 50
 # link 内待检查的字段
 LINK_FIELDS = ["LEFTPORT", "RIGHTPORT", "CLASSNAME"]
 
+# 需要去除数字后缀的端口字段
+PORT_FIELDS = {"LEFTPORT", "RIGHTPORT"}
+
 FIELD_LABELS = {
     "LEFTPORT": "左端口 (LEFTPORT)",
     "RIGHTPORT": "右端口 (RIGHTPORT)",
     "CLASSNAME": "链路类型 (CLASSNAME)",
 }
+
+
+def strip_port_number(value: str) -> str:
+    """去除端口名中数字及之后的部分。
+
+    GigabitEthernet0/0/0 → GigabitEthernet
+    MultiGE0/0/0 → MultiGE
+    Vlanif1 → Vlanif
+    """
+    return re.sub(r"\d.*$", "", value)
 
 
 def iter_json_files(dataset_root: Path, splits: Iterable[str]) -> Iterable[Tuple[str, Path]]:
@@ -94,7 +109,10 @@ def analyze_graph(graph: Dict[str, Any]) -> Tuple[Counter, Counter, Counter]:
         for field in LINK_FIELDS:
             if field in link:
                 presence_counter[field] += 1
-                value_counters[field][str(link[field])] += 1
+                raw_value = str(link[field])
+                if field in PORT_FIELDS:
+                    raw_value = strip_port_number(raw_value)
+                value_counters[field][raw_value] += 1
             else:
                 missing_fields.append(field)
 
