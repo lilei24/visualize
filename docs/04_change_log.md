@@ -51,3 +51,9 @@
   - 全局汇总按配置总数降序排列
   - 输出 JSON 结果 + 终端分组柱状图
   - 支持 `--split` 参数
+- 新建 `src/global_statistics/type_role_joint_stats.py`
+  - 统计 device.TYPE × topologyNode.DEVICEROLE 联合分布
+  - 按 TYPE 行 × DEVICEROLE 列展示交叉分布
+  - 同时按 DEVICEROLE 汇总各 TYPE 占比
+  - 输出 JSON 结果 + 终端交叉表
+  - 支持 `--split` 参数
