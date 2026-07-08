@@ -70,8 +70,8 @@
   - 输出 JSON 结果 + 终端覆盖率柱状图 + 值分布
   - 支持 `--split` 参数
 - 新建 `src/global_statistics/dg_type_overlap_stats.py`
-  - 统计 deviceGroups.DEVICEGROUPTYPES 与 nodes.device.TYPE 的重叠关系
-  - DEVICEGROUPTYPES 逗号分隔值自动拆分（"FW,LSW" → {"FW", "LSW"}）
-  - 标注双方共有、仅 DG 有、仅 node 有的值
-  - 输出 JSON 结果 + 终端对照表
+  - 按图统计 DEVICEGROUPTYPES vs node TYPE 的三分类
+  - 1) 完全对应（DG == Node）2) DG有Node无 3) Node有DG无
+  - DEVICEGROUPTYPES 逗号分隔值自动拆分
+  - 统计单位为图数量，后两类可重叠
   - 支持 `--split` 参数

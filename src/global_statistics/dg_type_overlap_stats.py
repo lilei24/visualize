@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """统计 deviceGroups 的 DEVICEGROUPTYPES 与 nodes 的 device.TYPE 的对应关系。
 
-统计维度：
-- deviceGroups 的 DEVICEGROUPTYPES 值列表（逗号分隔的值拆分后统计）
-- 每个 DEVICEGROUPTYPES 值在 nodes device.TYPE 中是否有对应
-- nodes device.TYPE 中哪些值在 DEVICEGROUPTYPES 中没有出现
+统计维度（按图统计）：
+- 完全对应：DG 的值集合 == node 的值集合（图数）
+- DG有 node无：DG 存在 node 中没有的值（图数）
+- node有 DG无：node 存在 DG 中没有的值（图数）
 - 按 split 汇总
 """
 
@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
@@ -69,7 +69,6 @@ def extract_device_group_types(graph: Dict[str, Any]) -> Set[str]:
         raw = dg_info.get("DEVICEGROUPTYPES")
         if raw is None or raw == "":
             continue
-        # 逗号分隔拆分，去除首尾空格
         for part in str(raw).split(","):
             part = part.strip()
             if part:
@@ -94,17 +93,27 @@ def extract_node_types(graph: Dict[str, Any]) -> Set[str]:
     return types
 
 
-def analyze_graph(graph: Dict[str, Any]) -> Dict[str, Any]:
-    """分析一张图中 DEVICEGROUPTYPES 与 node TYPE 的对应关系。"""
-    dg_types = extract_device_group_types(graph)
-    node_types = extract_node_types(graph)
+def classify_graph(dg_types: Set[str], node_types: Set[str]) -> Dict[str, Any]:
+    """对一张图的 DEVICEGROUPTYPES vs node TYPE 做三分类。
+
+    返回字典：
+    - is_match: DG == Node（完全对应）
+    - dg_has_node_not: DG 有 node 没有的值
+    - node_has_dg_not: node 有 DG 没有的值
+    """
+    dg_extra = sorted(dg_types - node_types)
+    node_extra = sorted(node_types - dg_types)
+    both = sorted(dg_types & node_types)
 
     return {
-        "dg_types": dg_types,
-        "node_types": node_types,
-        "dg_has_node_has_not": sorted(dg_types - node_types),
-        "node_has_dg_has_not": sorted(node_types - dg_types),
-        "both": sorted(dg_types & node_types),
+        "is_match": len(dg_extra) == 0 and len(node_extra) == 0,
+        "dg_has_node_not": len(dg_extra) > 0,
+        "node_has_dg_not": len(node_extra) > 0,
+        "dg_extra": dg_extra,
+        "node_extra": node_extra,
+        "both": both,
+        "dg_types": sorted(dg_types),
+        "node_types": sorted(node_types),
     }
 
 
@@ -120,12 +129,18 @@ def build_statistics(
     splits: List[str],
     progress_interval: int,
 ) -> None:
-    """按 split 遍历所有 JSON 文件，输出 DEVICEGROUPTYPES vs node TYPE 对应分析。"""
+    """按 split 遍历所有 JSON 文件，输出三分类统计。"""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     per_file_results: List[Dict[str, Any]] = []
-    global_dg_counter: Counter = Counter()          # 各 DEVICEGROUPTYPES 值出现次数
-    global_node_type_counter: Counter = Counter()   # 各 node TYPE 出现次数
+
+    # 三分类计数器
+    match_count = 0
+    dg_has_node_not_count = 0
+    node_has_dg_not_count = 0
+    # 双方都没有的情况（都为空集）
+    both_empty_count = 0
+
     total_files = 0
     skipped_files = 0
     issues: List[Dict[str, Any]] = []
@@ -147,22 +162,23 @@ def build_statistics(
                 continue
 
             total_files += 1
-            result = analyze_graph(graph)
+            dg_types = extract_device_group_types(graph)
+            node_types = extract_node_types(graph)
+            result = classify_graph(dg_types, node_types)
 
-            # 累加全局计数：DEVICEGROUPTYPES 每图每个值只算 1 次
-            for t in result["dg_types"]:
-                global_dg_counter[t] += 1
-            for t in result["node_types"]:
-                global_node_type_counter[t] += 1
+            if result["is_match"]:
+                match_count += 1
+            if result["dg_has_node_not"]:
+                dg_has_node_not_count += 1
+            if result["node_has_dg_not"]:
+                node_has_dg_not_count += 1
+            if not dg_types and not node_types:
+                both_empty_count += 1
 
             per_file_results.append({
                 "split": split,
                 "source_file": source_file,
-                "dg_types": sorted(result["dg_types"]),
-                "node_types": sorted(result["node_types"]),
-                "both": result["both"],
-                "dg_only": result["dg_has_node_has_not"],
-                "node_only": result["node_has_dg_has_not"],
+                **result,
             })
 
             if progress_interval > 0 and (file_index % progress_interval == 0 or file_index == split_total):
@@ -177,41 +193,27 @@ def build_statistics(
                     flush=True,
                 )
 
-    # 全局视角：统计所有图的并集
-    all_dg_types = set(global_dg_counter.keys())
-    all_node_types = set(global_node_type_counter.keys())
-    both = sorted(all_dg_types & all_node_types)
-    dg_only = sorted(all_dg_types - all_node_types)
-    node_only = sorted(all_node_types - all_dg_types)
-
     summary = {
         "dataset_root": str(dataset_root),
         "splits": splits,
         "total_files": total_files,
         "skipped_files": skipped_files,
-        "dg_type_distribution": {
-            t: {
-                "count": count,
-                "percentage": round(count / total_files * 100, 2) if total_files > 0 else 0.0,
-                "found_in_node_types": t in all_node_types,
-            }
-            for t, count in global_dg_counter.most_common()
+        "three_way_classification": {
+            "完全对应 (DG == Node)": {
+                "count": match_count,
+                "percentage": round(match_count / total_files * 100, 2) if total_files > 0 else 0.0,
+            },
+            "DG有 Node无 (DG not subset of Node)": {
+                "count": dg_has_node_not_count,
+                "percentage": round(dg_has_node_not_count / total_files * 100, 2) if total_files > 0 else 0.0,
+            },
+            "Node有 DG无 (Node not subset of DG)": {
+                "count": node_has_dg_not_count,
+                "percentage": round(node_has_dg_not_count / total_files * 100, 2) if total_files > 0 else 0.0,
+            },
         },
-        "node_type_distribution": {
-            t: {
-                "count": count,
-                "percentage": round(count / total_files * 100, 2) if total_files > 0 else 0.0,
-                "found_in_dg_types": t in all_dg_types,
-            }
-            for t, count in global_node_type_counter.most_common()
-        },
-        "overlap_summary": {
-            "total_dg_type_values": len(all_dg_types),
-            "total_node_type_values": len(all_node_types),
-            "both": both,
-            "dg_only": dg_only,
-            "node_only": node_only,
-        },
+        "note": "后两类可能重叠（一张图可同时属于后两类）",
+        "both_empty": both_empty_count,
         "issues": issues,
     }
 
@@ -225,34 +227,18 @@ def build_statistics(
     print(f"统计完成：{total_files} 张图")
     print(f"{'='*70}")
 
-    print(f"\n--- DEVICEGROUPTYPES 值分布（按出现图数）---")
-    for t, count in global_dg_counter.most_common():
-        pct = round(count / total_files * 100, 2) if total_files > 0 else 0.0
-        bar_len = max(1, int(pct / 2))
-        bar = "█" * bar_len
-        mark = "✓" if t in all_node_types else "✗  (在 node TYPE 中找不到)"
-        print(f"  {t:25s}  {bar}  {count:5d}张图 ({pct:5.1f}%)  {mark}")
+    def bar(pct: float) -> str:
+        return "█" * max(1, int(pct / 2)) + "░" * max(0, 50 - int(pct / 2))
 
-    print(f"\n--- node TYPE 值分布（按出现图数）---")
-    for t, count in global_node_type_counter.most_common():
-        pct = round(count / total_files * 100, 2) if total_files > 0 else 0.0
-        bar_len = max(1, int(pct / 2))
-        bar = "█" * bar_len
-        mark = "✓" if t in all_dg_types else "✗  (在 DEVICEGROUPTYPES 中找不到)"
-        print(f"  {t:25s}  {bar}  {count:5d}张图 ({pct:5.1f}%)  {mark}")
+    print(f"\n  1. 完全对应 (DG == Node)：           {match_count:5d}张图  ({round(match_count/total_files*100,1) if total_files>0 else 0}%)")
+    print(f"     {bar(round(match_count/total_files*100,1) if total_files>0 else 0)}")
+    print(f"\n  2. DG有 Node无 (DG not subset of Node)：{dg_has_node_not_count:5d}张图  ({round(dg_has_node_not_count/total_files*100,1) if total_files>0 else 0}%)")
+    print(f"     {bar(round(dg_has_node_not_count/total_files*100,1) if total_files>0 else 0)}")
+    print(f"\n  3. Node有 DG无 (Node not subset of DG)：{node_has_dg_not_count:5d}张图  ({round(node_has_dg_not_count/total_files*100,1) if total_files>0 else 0}%)")
+    print(f"     {bar(round(node_has_dg_not_count/total_files*100,1) if total_files>0 else 0)}")
 
-    print(f"\n--- 重叠分析 ---")
-    print(f"  DEVICEGROUPTYPES 去重值：{len(all_dg_types)} 个")
-    print(f"  node TYPE 去重值：      {len(all_node_types)} 个")
-    print(f"  双方共有：              {len(both)} 个  {both if both else ''}")
-    if dg_only:
-        print(f"  仅 DEVICEGROUPTYPES 有：{len(dg_only)} 个  {dg_only}")
-    else:
-        print(f"  仅 DEVICEGROUPTYPES 有：0 个")
-    if node_only:
-        print(f"  仅 node TYPE 有：       {len(node_only)} 个  {node_only}")
-    else:
-        print(f"  仅 node TYPE 有：       0 个")
+    if both_empty_count:
+        print(f"\n  注：{both_empty_count} 张图双方均为空集（归入完全对应）")
 
     if skipped_files:
         print(f"\n跳过 {skipped_files} 个无法解析的文件")
@@ -261,7 +247,7 @@ def build_statistics(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="统计 deviceGroups.DEVICEGROUPTYPES 与 nodes.device.TYPE 的对应关系。"
+        description="按图统计 DEVICEGROUPTYPES vs node TYPE 的三分类（完全对应/DG有node无/node有DG无）。"
     )
     parser.add_argument(
         "dataset_root",
